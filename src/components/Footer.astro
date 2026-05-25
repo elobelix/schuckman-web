@@ -1,0 +1,30 @@
+---
+interface Props {
+  settings: any;
+}
+const { settings } = Astro.props;
+const c = settings.contact;
+---
+
+<section class="footer-preview" id="contacto">
+  <div class="footer-grid">
+    <div>
+      <h4>Estudio</h4>
+      <p class="footer-statement">Arquitectura <em>pensada, dirigida y construida</em> en persona.</p>
+    </div>
+    <div class="footer-contact">
+      <h4>Contacto</h4>
+      <p><a href={`mailto:${c.email}`}>{c.email}</a></p>
+      <p><a href={`tel:${c.phoneRaw}`}>{c.phone}</a></p>
+      <p>{c.addressLine1}<br>{c.addressLine2}</p>
+    </div>
+    <div class="footer-contact">
+      <h4>Síguenos</h4>
+      <p><a href={settings.instagramUrl} target="_blank" rel="noopener">Instagram →</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© {new Date().getFullYear()} Schuckman & Asociados</span>
+    <span>schuckman.com.ar</span>
+  </div>
+</section>

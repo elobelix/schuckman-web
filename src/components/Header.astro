@@ -1,0 +1,49 @@
+---
+interface Props {
+  activeNav?: 'estudio' | 'proyectos' | 'contacto' | '';
+  forceScrolled?: boolean;
+}
+const { activeNav = '', forceScrolled = false } = Astro.props;
+
+// On the home page, the header transitions between over-photo (transparent
+// over hero) and over-light (solid bg over content). On interior pages
+// we just want it solid from the start.
+const initialClass = forceScrolled ? 'over-light' : 'over-photo';
+---
+
+<header class={`header ${initialClass}`} id="header" data-force-scrolled={forceScrolled}>
+  <a href="/" class="brand">
+    <div class="brand-main">Schuckman & Asoc.</div>
+    <div class="brand-line"></div>
+    <div class="brand-arch">Arquitectura | Diseño</div>
+  </a>
+  <nav>
+    <ul>
+      <li><a href="/#estudio" class={activeNav === 'estudio' ? 'active' : ''}>Estudio</a></li>
+      <li><a href="/#proyectos" class={activeNav === 'proyectos' ? 'active' : ''}>Proyectos</a></li>
+      <li><a href="/#contacto" class={activeNav === 'contacto' ? 'active' : ''}>Contacto</a></li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  // Toggle header style when scrolling past the hero on the home page.
+  // Pages with forceScrolled=true skip this logic and stay solid.
+  const header = document.getElementById('header');
+  if (header && header.dataset.forceScrolled !== 'true') {
+    const hero = document.querySelector('.hero') as HTMLElement | null;
+    const updateHeader = () => {
+      if (!hero) return;
+      const heroHeight = hero.offsetHeight;
+      if (window.scrollY < heroHeight - 80) {
+        header.classList.add('over-photo');
+        header.classList.remove('over-light');
+      } else {
+        header.classList.add('over-light');
+        header.classList.remove('over-photo');
+      }
+    };
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    updateHeader();
+  }
+</script>

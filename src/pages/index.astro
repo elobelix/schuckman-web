@@ -1,0 +1,367 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteSettings, getAllProjects } from '../sanity/queries';
+
+const settings = await getSiteSettings();
+const projects = await getAllProjects();
+
+const statusLabel = (p: any) => p.status === 'en_curso' ? 'En Curso' : 'Terminado';
+---
+
+<BaseLayout>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg" style={`background-image: url('${settings.officeImage}')`}></div>
+    <div class="hero-content">
+      <div class="hero-meta">{settings.hero.meta}</div>
+      <h1>{settings.hero.titleLine1}<br><em>{settings.hero.titleLine2}</em>.</h1>
+      <p class="hero-sub">{settings.hero.subtitle}</p>
+    </div>
+  </section>
+
+  <!-- QUIÉNES SOMOS -->
+  <section class="section" id="estudio">
+    <div class="container">
+      <div class="section-head" data-num="01">
+        <div class="label">Sobre nosotros</div>
+      </div>
+
+      <!-- 01 Nuestro Equipo -->
+      <div class="about-block">
+        <div class="block-header">
+          <span class="block-num">01</span>
+          <h3 class="block-title">Nuestro Equipo</h3>
+        </div>
+        <div class="team">
+          <div class="team-photo">
+            <img src={settings.teamImage} alt="Equipo Schuckman & Asoc.">
+          </div>
+          <div class="team-text">
+            <p set:html={settings.team.intro.replace(/\*\*(.+?)\*\*/g, '<em>$1</em>')} />
+            <p>{settings.team.p1}</p>
+            <p>{settings.team.p2}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 Cómo Trabajamos -->
+      <div class="about-block">
+        <div class="block-header">
+          <span class="block-num">02</span>
+          <h3 class="block-title">Cómo trabajamos</h3>
+        </div>
+        <div class="services">
+          {settings.services.map((service: any, i: number) => (
+            <article class="service">
+              <span class="service-num">{String(i + 1).padStart(2, '0')}</span>
+              <div class="service-content">
+                <h4>{service.title}</h4>
+                <p set:html={service.description.replace(/\*(.+?)\*/g, '<em>$1</em>')} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section class="section projects-section" id="proyectos">
+    <div class="container">
+      <div class="section-head" data-num="02">
+        <div class="label">Obras</div>
+      </div>
+
+      <div class="grid">
+        {projects.map((p: any) => (
+          <a href={`/proyectos/${p.slug}`} class="card">
+            <div class="card-img" style={`background-image: url('${p.coverImage}')`}></div>
+            <div class="card-overlay"></div>
+            <div class={`card-stage ${p.status === 'terminado' ? 'done' : ''}`}>{statusLabel(p)}</div>
+            <div class="card-info">
+              <div class="card-name">{p.name}</div>
+              <div class="card-meta"><span>{p.neighborhood}</span><span>{p.year}</span></div>
+            </div>
+            <div class="card-arrow">→</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+/* === HERO === */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 80px;
+  color: white;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.85) contrast(1.05);
+  z-index: 0;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,0,0,0.1) 30%,
+    rgba(0,0,0,0.0) 50%,
+    rgba(0,0,0,0.5) 100%);
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: var(--container);
+  margin: 0 auto;
+  width: 100%;
+}
+.hero-meta {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hero-meta::before {
+  content: '';
+  width: 60px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+.hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(56px, 10vw, 180px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  margin-bottom: 40px;
+}
+.hero h1 em { font-style: italic; color: var(--accent-soft); }
+.hero-sub {
+  max-width: 520px;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.55;
+}
+
+/* === QUIÉNES SOMOS === */
+.about-block { margin-bottom: 140px; }
+.about-block:last-child { margin-bottom: 0; }
+.block-header {
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+  margin-bottom: 60px;
+}
+.block-num {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 56px;
+  color: var(--accent);
+  line-height: 1;
+}
+.block-title {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Nuestro Equipo */
+.team {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.team-photo {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--ink);
+}
+.team-photo img { width: 100%; height: 100%; object-fit: cover; filter: brightness(1); }
+.team-text p {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+}
+.team-text p:first-child {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+.team-text p:first-child :global(em) { color: var(--accent); font-style: italic; }
+
+/* Cómo Trabajamos */
+.services { display: flex; flex-direction: column; }
+.service {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 48px;
+  padding: 56px 0;
+  border-top: 1px solid var(--line);
+  align-items: start;
+  transition: all 0.5s ease;
+}
+.service:last-child { border-bottom: 1px solid var(--line); }
+.service:hover { background: var(--bg-warm); padding-left: 24px; padding-right: 24px; }
+.service-num {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 40px;
+  color: var(--accent);
+  line-height: 1;
+}
+.service-content h4 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(28px, 3.5vw, 44px);
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.service-content p {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 560px;
+}
+.service-content :global(em) { font-style: italic; color: var(--ink); }
+
+/* === PROYECTOS === */
+.projects-section { background: var(--bg-warm); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.card {
+  position: relative;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: var(--ink);
+  cursor: pointer;
+  display: block;
+}
+.card-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+  filter: brightness(0.95) contrast(1.05);
+}
+.card:hover .card-img { transform: scale(1.08); filter: brightness(0.7) contrast(1.05); }
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 55%);
+  pointer-events: none;
+}
+.card-info {
+  position: absolute;
+  bottom: 22px;
+  left: 22px;
+  right: 22px;
+  color: white;
+  z-index: 2;
+}
+.card-name {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 10px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover .card-name { transform: translateY(-4px); }
+.card-meta {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  display: flex;
+  gap: 14px;
+}
+.card-meta span:not(:last-child)::after { content: '·'; margin-left: 14px; opacity: 0.5; }
+.card-stage {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: white;
+  padding: 7px 12px;
+  background: rgba(198, 107, 61, 0.95);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+}
+.card-stage.done {
+  background: rgba(242, 237, 227, 0.92);
+  color: var(--bg);
+}
+.card:hover .card-stage { opacity: 1; transform: translateY(0); }
+.card-arrow {
+  position: absolute;
+  bottom: 22px;
+  right: 22px;
+  color: white;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 22px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+.card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .hero { padding: 0 24px 60px; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .team { grid-template-columns: 1fr; gap: 40px; }
+  .service { grid-template-columns: 50px 1fr; gap: 24px; }
+}
+@media (max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+  .block-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .service { padding: 32px 0; }
+  .service:hover { padding-left: 0; padding-right: 0; }
+}
+</style>

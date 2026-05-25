@@ -1,0 +1,139 @@
+{
+  "settings": {
+    "hero": {
+      "meta": "Estudio de arquitectura y diseño",
+      "titleLine1": "Diseñar. Dirigir.",
+      "titleLine2": "Construir",
+      "subtitle": "Estudio de arquitectura y diseño. Acompañamos cada obra de principio a fin, con atención personalizada en cada etapa."
+    },
+    "team": {
+      "intro": "Un estudio de **arquitectura, diseño e interiorismo**, con foco en obra residencial y reformas.",
+      "p1": "Trabajamos integrando proyecto y dirección de obra bajo un mismo techo. Eso nos permite mantener el criterio vivo de principio a fin: del primer trazo al último detalle de terminación.",
+      "p2": "Cada cliente recibe atención personalizada por los arquitectos del estudio. Sin intermediarios, sin pérdida de información."
+    },
+    "services": [
+      {
+        "title": "Proyecto y documentación",
+        "description": "*La calidad de un proyecto no depende del costo, sino de la inteligencia con la que se aprovechan tiempo y recursos.* Desde el anteproyecto hasta la documentación ejecutiva: pliegos técnicos, ingeniería de detalles y coordinación con especialistas (estructura, instalaciones, costos) desde la fase temprana."
+      },
+      {
+        "title": "Dirección de obra",
+        "description": "Controlamos la fiel interpretación del proyecto durante la construcción. Coordinamos contratistas, certificamos avances, gestionamos cronogramas y nos hacemos cargo del rol cuando no existe empresa constructora general. La obra se entrega cuando tiene que entregarse — y como tiene que entregarse."
+      },
+      {
+        "title": "Reformas y remodelaciones",
+        "description": "Transformaciones de viviendas, locales y espacios existentes. Ampliaciones, refuncionalizaciones y puestas en valor. El mismo criterio técnico y estético que aplicamos a obra nueva, adaptado a las particularidades de lo que ya está construido."
+      }
+    ],
+    "contact": {
+      "email": "r.schuckman@schuckman.com.ar",
+      "phone": "+54 11 3024-4030",
+      "phoneRaw": "+541130244030",
+      "whatsapp": "541130244030",
+      "addressLine1": "Lavalle 898, 1er piso",
+      "addressLine2": "Ituzaingó, Buenos Aires"
+    },
+    "instagramUrl": "https://www.instagram.com/schuckman_asoc/",
+    "officeImage": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80",
+    "teamImage": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80"
+  },
+  "projects": [
+    {
+      "_id": "chene",
+      "name": "Edificio Chêne",
+      "slug": "edificio-chene",
+      "status": "en_curso",
+      "currentStage": "estructura",
+      "address": "Mitre 1480",
+      "neighborhood": "Ituzaingó",
+      "year": 2025,
+      "superficie": 2840,
+      "pisos": 7,
+      "unidades": 24,
+      "cocheras": 18,
+      "bauleras": 12,
+      "tipologias": "Monoambiente · 2 · 3 · 4 ambientes con terraza propia",
+      "amenities": ["pileta", "parrilla", "sum", "gimnasio", "spa", "solarium", "cocheras"],
+      "customAmenities": [],
+      "instagramUrl": "https://www.instagram.com/schuckman_asoc/",
+      "stages": [
+        {"stage": "diseno", "date": "Mar 2024"},
+        {"stage": "aprobacion", "date": "Jul 2024"}
+      ],
+      "coverImage": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=2000&q=80",
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=1400&q=80",
+        "https://images.unsplash.com/photo-1517089596392-fb9a9033e05b?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=2000&q=80",
+        "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80"
+      ]
+    },
+    {
+      "_id": "gramineas",
+      "name": "Edificio Gramíneas",
+      "slug": "edificio-gramineas",
+      "status": "en_curso",
+      "currentStage": "aprobacion",
+      "address": "",
+      "neighborhood": "Ituzaingó",
+      "year": 2025,
+      "coverImage": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    },
+    {
+      "_id": "orquideas",
+      "name": "Edificio Orquídeas",
+      "slug": "edificio-orquideas",
+      "status": "terminado",
+      "neighborhood": "Ituzaingó",
+      "year": 2023,
+      "coverImage": "https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    },
+    {
+      "_id": "ruze",
+      "name": "Edificio Ruze",
+      "slug": "edificio-ruze",
+      "status": "terminado",
+      "neighborhood": "Ituzaingó",
+      "year": 2022,
+      "coverImage": "https://images.unsplash.com/photo-1517089596392-fb9a9033e05b?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    },
+    {
+      "_id": "frezie",
+      "name": "Edificio Frezie",
+      "slug": "edificio-frezie",
+      "status": "terminado",
+      "neighborhood": "Ituzaingó",
+      "year": 2021,
+      "coverImage": "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    },
+    {
+      "_id": "lilas",
+      "name": "Edificio Las Lilas",
+      "slug": "edificio-las-lilas",
+      "status": "terminado",
+      "neighborhood": "Ituzaingó",
+      "year": 2020,
+      "coverImage": "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    },
+    {
+      "_id": "gardenias",
+      "name": "Edificio Gardenias",
+      "slug": "edificio-gardenias",
+      "status": "terminado",
+      "neighborhood": "Ituzaingó",
+      "year": 2019,
+      "coverImage": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=80",
+      "gallery": []
+    }
+  ]
+}

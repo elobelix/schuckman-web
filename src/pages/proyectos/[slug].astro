@@ -1,0 +1,325 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmenityIcon from '../../components/AmenityIcon.astro';
+import { getAllProjects, getProjectBySlug } from '../../sanity/queries';
+
+// Static site generation: pre-render one page per project at build time
+export async function getStaticPaths() {
+  const projects = await getAllProjects();
+  return projects.map((p: any) => ({
+    params: { slug: p.slug },
+    props: { slug: p.slug }
+  }));
+}
+
+const { slug } = Astro.props;
+const project = await getProjectBySlug(slug);
+
+if (!project) {
+  return Astro.redirect('/404');
+}
+
+// Stage data — labels and order
+const STAGES = [
+  { id: 'diseno', name: 'Diseño', short: 'Diseño' },
+  { id: 'aprobacion', name: 'Aprobación municipal', short: 'Aprob.' },
+  { id: 'estructura', name: 'Estructura', short: 'Estructura' },
+  { id: 'mamposteria', name: 'Mampostería y servicios', short: 'Mampost.' },
+  { id: 'terminacion', name: 'Terminación', short: 'Terminac.' },
+  { id: 'entregado', name: 'Entregado', short: 'Entregado' },
+];
+
+const currentStageIndex = STAGES.findIndex(s => s.id === project.currentStage);
+const progressPercent = currentStageIndex >= 0
+  ? Math.round((currentStageIndex / (STAGES.length - 1)) * 100)
+  : 0;
+const currentStageName = currentStageIndex >= 0 ? STAGES[currentStageIndex].name : '';
+
+// Map stage IDs to their completion dates from project.stages array
+const stageDates: Record<string, string> = {};
+(project.stages || []).forEach((s: any) => { stageDates[s.stage] = s.date; });
+
+function stageStatus(idx: number) {
+  if (idx < currentStageIndex) return 'completed';
+  if (idx === currentStageIndex) return 'current';
+  return 'pending';
+}
+
+const allAmenities = [
+  ...(project.amenities || []),
+  ...((project.customAmenities || []).map((c: any) => c.name || c))
+];
+
+const isEnCurso = project.status === 'en_curso';
+---
+
+<BaseLayout
+  title={`${project.name} — Schuckman & Asoc.`}
+  activeNav="proyectos"
+  showFooter={false}
+>
+  <!-- MAGAZINE COVER -->
+  <section class="cover">
+    <div class="cover-left">
+      <div>
+        <a href="/#proyectos" class="back-link">Volver</a>
+        <div class="kicker">{isEnCurso ? 'En curso' : 'Terminado'}</div>
+        <h1 class="proj-title">{project.name.replace(/^Edificio\s+/, 'Edificio ').split(' ').slice(0, -1).join(' ')} <em>{project.name.split(' ').slice(-1)[0]}</em></h1>
+        <div class="title-meta">
+          {isEnCurso && currentStageName && (
+            <div class="status-pill">
+              <span class="dot"></span>
+              {currentStageName}
+            </div>
+          )}
+          <div class="proj-loc">
+            {[project.address, project.neighborhood, project.year].filter(Boolean).join(' · ')}
+          </div>
+        </div>
+
+        {/* FICHA TÉCNICA */}
+        {(project.superficie || project.pisos || project.unidades) && (
+          <div class="stat-row">
+            {project.superficie && (
+              <div class="stat">
+                <div class="stat-val">{project.superficie.toLocaleString('es-AR')}<small>m²</small></div>
+                <div class="stat-lbl">Superficie</div>
+              </div>
+            )}
+            {project.pisos && (
+              <div class="stat">
+                <div class="stat-val">{project.pisos}</div>
+                <div class="stat-lbl">Pisos</div>
+              </div>
+            )}
+            {project.unidades && (
+              <div class="stat">
+                <div class="stat-val">{project.unidades}</div>
+                <div class="stat-lbl">Unidades</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {project.tipologias && (
+          <div class="tipologias">
+            <strong>Tipologías</strong>
+            {project.tipologias}
+            {(project.cocheras || project.bauleras) && (
+              <div class="t-extras">
+                {[
+                  project.cocheras && `${project.cocheras} cocheras`,
+                  project.bauleras && `${project.bauleras} bauleras`
+                ].filter(Boolean).join(' · ')}
+              </div>
+            )}
+          </div>
+        )}
+
+        {allAmenities.length > 0 && (
+          <div class="amenity-row">
+            <div class="amenity-row-label">Amenities</div>
+            <div class="amenity-icons">
+              {allAmenities.map((a: string) => <AmenityIcon id={a} label={a.charAt(0).toUpperCase() + a.slice(1)} />)}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* TIMELINE — only for en curso */}
+      {isEnCurso && (
+        <div>
+          <div class="mini-tl-label">
+            <span>Etapa de obra</span>
+            <span class="pct">{progressPercent}% — {currentStageName}</span>
+          </div>
+          <div class="mini-tl" id="mtl">
+            <div class="mini-track"><div class="mini-fill" id="mtf" style={`--target-w: ${progressPercent}%`}></div></div>
+            <div class="mini-stations">
+              {STAGES.map((stage, idx) => (
+                <div class={`mini-s ${stageStatus(idx)}`}>
+                  <div class="mini-dot"></div>
+                  <div class="mini-name">{stage.short}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {project.instagramUrl && (
+            <a href={project.instagramUrl} target="_blank" rel="noopener" class="cta-ig">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+              <span>Ver avances en Instagram</span>
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+
+    <div class="cover-right">
+      <img src={project.gallery?.[0] || project.coverImage} alt={project.name}>
+    </div>
+  </section>
+
+  {/* GALERÍA */}
+  {project.gallery && project.gallery.length > 0 && (
+    <section class="gallery-section">
+      <div class="gallery-head"><h2>Galería</h2></div>
+      <div class="gallery">
+        {project.gallery.map((img: string, idx: number) => (
+          <div class={`g-item g-${(idx % 9) + 1}`}><img src={img} alt={`${project.name} — ${idx + 1}`}></div>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<script>
+  // Animate timeline progress on load
+  const mtf = document.getElementById('mtf') as HTMLElement | null;
+  if (mtf) {
+    const target = getComputedStyle(mtf).getPropertyValue('--target-w').trim() || '0%';
+    setTimeout(() => { mtf.style.width = target; }, 300);
+  }
+</script>
+
+<style>
+.cover { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; padding-top: 76px; }
+.cover-left { padding: 60px 48px 48px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
+.cover-right { position: relative; overflow: hidden; background: var(--ink); }
+.cover-right img { width: 100%; height: 100%; object-fit: cover; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 300; font-size: 11px; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 32px; transition: color 0.3s ease;
+}
+.back-link:hover { color: var(--accent); }
+.back-link::before { content: '←'; font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px; }
+
+.kicker {
+  font-weight: 300; font-size: 11px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.kicker::before { content: ''; width: 40px; height: 1px; background: var(--accent); }
+
+.proj-title {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(48px, 6.5vw, 96px); line-height: 0.9;
+  letter-spacing: -0.025em; margin-bottom: 24px;
+}
+.proj-title em { font-style: italic; color: var(--accent); }
+
+.title-meta { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 40px; }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px;
+  border: 1px solid var(--accent); background: rgba(216,123,77,0.07);
+  font-weight: 400; font-size: 10px; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--accent);
+}
+.status-pill .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent); position: relative;
+}
+.status-pill .dot::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  border: 1px solid var(--accent); opacity: 0.5;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+.proj-loc {
+  font-weight: 300; font-size: 12px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+
+.stat-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 18px 0; margin-bottom: 24px;
+}
+.stat { display: flex; flex-direction: column; gap: 4px; padding: 0 14px; border-right: 1px solid var(--line); }
+.stat:first-child { padding-left: 0; }
+.stat:last-child { border-right: 0; padding-right: 0; }
+.stat-val { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 32px; line-height: 1; color: var(--ink); }
+.stat-val small { font-family: 'Jost', sans-serif; font-style: normal; font-weight: 300; font-size: 11px; margin-left: 3px; color: var(--muted); }
+.stat-lbl { font-weight: 300; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+
+.tipologias { font-weight: 300; font-size: 13px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 32px; }
+.tipologias strong { display: block; font-weight: 300; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.t-extras { margin-top: 8px; font-size: 12px; color: var(--muted); }
+
+.amenity-row { padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.amenity-row-label { font-weight: 300; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.amenity-icons { display: flex; gap: 28px; flex-wrap: wrap; }
+:global(.am-i) { display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.3s ease; }
+:global(.am-i:hover) { color: var(--accent); transform: translateY(-3px); }
+:global(.am-i-icon) { width: 28px; height: 28px; }
+:global(.am-i-icon svg) { width: 100%; height: 100%; stroke: currentColor; }
+:global(.am-i-lbl) { font-weight: 400; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; }
+
+/* Mini Timeline */
+.mini-tl-label { font-weight: 300; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.mini-tl-label .pct { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px; color: var(--accent); letter-spacing: 0; text-transform: none; line-height: 1; }
+.mini-tl { position: relative; padding-top: 8px; }
+.mini-track { position: absolute; top: 12px; left: 5%; right: 5%; height: 2px; background: var(--line-strong); }
+.mini-fill { height: 100%; background: var(--accent); width: 0; transition: width 1.8s cubic-bezier(0.16,1,0.3,1); }
+.mini-stations { display: grid; grid-template-columns: repeat(6, 1fr); position: relative; }
+.mini-s { display: flex; flex-direction: column; align-items: center; }
+.mini-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line-strong); margin-bottom: 12px; position: relative; z-index: 2; }
+.mini-s.completed .mini-dot, .mini-s.current .mini-dot { background: var(--accent); border-color: var(--accent); }
+.mini-s.current .mini-dot::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; animation: ring 2.4s ease-out infinite; }
+@keyframes ring { 0% { transform: scale(0.6); opacity: 0; } 30% { opacity: 0.5; } 100% { transform: scale(1.8); opacity: 0; } }
+.mini-name { font-weight: 400; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; text-align: center; line-height: 1.2; }
+.mini-s.pending .mini-name { opacity: 0.45; }
+.mini-s.current .mini-name { color: var(--accent); }
+
+.cta-ig {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+  display: inline-flex; align-items: center; gap: 12px;
+  font-weight: 300; font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ink-soft); transition: color 0.3s ease;
+}
+.cta-ig:hover { color: var(--accent); }
+.cta-ig svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
+
+/* Gallery */
+.gallery-section { max-width: var(--container); margin: 0 auto; padding: 100px 48px 120px; }
+.gallery-head { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 60px; }
+.gallery-head h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(40px, 6vw, 72px); line-height: 0.95; letter-spacing: -0.02em; }
+.gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.g-item { overflow: hidden; background: var(--ink); position: relative; cursor: pointer; }
+.g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease; filter: brightness(1); }
+.g-item:hover img { transform: scale(1.06); filter: brightness(0.75); }
+.g-1 { grid-column: span 6; aspect-ratio: 21/9; }
+.g-2 { grid-column: span 3; aspect-ratio: 4/3; }
+.g-3 { grid-column: span 3; aspect-ratio: 4/3; }
+.g-4 { grid-column: span 4; aspect-ratio: 4/3; }
+.g-5 { grid-column: span 2; aspect-ratio: 4/5; }
+.g-6 { grid-column: span 6; aspect-ratio: 21/9; }
+.g-7 { grid-column: span 2; aspect-ratio: 1; }
+.g-8 { grid-column: span 2; aspect-ratio: 1; }
+.g-9 { grid-column: span 2; aspect-ratio: 1; }
+
+@media (max-width: 1100px) {
+  .gallery-section { padding-left: 24px; padding-right: 24px; }
+  .cover { grid-template-columns: 1fr; min-height: 0; }
+  .cover-left { padding: 40px 24px; }
+  .cover-right { aspect-ratio: 16/10; }
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .g-1, .g-4, .g-6 { grid-column: span 2; aspect-ratio: 16/9; }
+  .g-2, .g-3, .g-5, .g-7, .g-8, .g-9 { grid-column: span 1; aspect-ratio: 1; }
+}
+@media (max-width: 700px) {
+  .title-meta { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .stat { padding: 0 8px; }
+  .stat-val { font-size: 26px; }
+  .mini-tl-label { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .amenity-icons { gap: 20px; }
+}
+</style>
