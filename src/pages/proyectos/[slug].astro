@@ -169,7 +169,7 @@ const isEnCurso = project.status === 'en_curso';
       <div class="gallery-head"><h2>Galería</h2></div>
       <div class="gallery">
         {project.gallery.map((img: string, idx: number) => (
-          <div class={`g-item g-${(idx % 9) + 1}`}><img src={img} alt={`${project.name} — ${idx + 1}`}></div>
+          <div class="g-item"><img src={img} alt={`${project.name} — ${idx + 1}`}></div>
         ))}
       </div>
     </section>
@@ -292,30 +292,20 @@ const isEnCurso = project.status === 'en_curso';
 .gallery-section { max-width: var(--container); margin: 0 auto; padding: 100px 48px 120px; }
 .gallery-head { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 60px; }
 .gallery-head h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(40px, 6vw, 72px); line-height: 0.95; letter-spacing: -0.02em; }
-.gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.g-item { overflow: hidden; background: var(--ink); position: relative; cursor: pointer; }
-.g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease; filter: brightness(1); }
+.gallery { column-count: 3; column-gap: 6px; }
+.g-item { overflow: hidden; background: var(--ink); position: relative; cursor: pointer; break-inside: avoid; margin-bottom: 6px; }
+.g-item img { width: 100%; height: auto; display: block; transition: transform 1.2s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease; filter: brightness(1); }
 .g-item:hover img { transform: scale(1.06); filter: brightness(0.75); }
-.g-1 { grid-column: span 6; aspect-ratio: 21/9; }
-.g-2 { grid-column: span 3; aspect-ratio: 4/3; }
-.g-3 { grid-column: span 3; aspect-ratio: 4/3; }
-.g-4 { grid-column: span 4; aspect-ratio: 4/3; }
-.g-5 { grid-column: span 2; aspect-ratio: 4/5; }
-.g-6 { grid-column: span 6; aspect-ratio: 21/9; }
-.g-7 { grid-column: span 2; aspect-ratio: 1; }
-.g-8 { grid-column: span 2; aspect-ratio: 1; }
-.g-9 { grid-column: span 2; aspect-ratio: 1; }
 
 @media (max-width: 1100px) {
   .gallery-section { padding-left: 24px; padding-right: 24px; }
   .cover { grid-template-columns: 1fr; min-height: 0; }
   .cover-left { padding: 40px 24px; }
   .cover-right { aspect-ratio: 16/10; }
-  .gallery { grid-template-columns: repeat(2, 1fr); }
-  .g-1, .g-4, .g-6 { grid-column: span 2; aspect-ratio: 16/9; }
-  .g-2, .g-3, .g-5, .g-7, .g-8, .g-9 { grid-column: span 1; aspect-ratio: 1; }
+  .gallery { column-count: 2; }
 }
 @media (max-width: 700px) {
+  .gallery { column-count: 1; }
   .title-meta { flex-direction: column; align-items: flex-start; gap: 14px; }
   .stat { padding: 0 8px; }
   .stat-val { font-size: 26px; }
