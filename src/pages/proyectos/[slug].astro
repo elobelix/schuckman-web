@@ -159,7 +159,7 @@ const isEnCurso = project.status === 'en_curso';
     </div>
 
     <div class="cover-right">
-      <img src={project.gallery?.[0] || project.coverImage} alt={project.name}>
+      <img src={project.coverImage || project.gallery?.[0]} alt={project.name}>
     </div>
   </section>
 
@@ -186,9 +186,9 @@ const isEnCurso = project.status === 'en_curso';
 </script>
 
 <style>
-.cover { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; padding-top: 76px; }
-.cover-left { padding: 60px 48px 48px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
-.cover-right { position: relative; overflow: hidden; background: var(--ink); }
+.cover { display: grid; grid-template-columns: 1.4fr 1fr; min-height: 75vh; padding: 76px 48px 48px; gap: 48px; align-items: start; }
+.cover-left { padding: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 40px; }
+.cover-right { position: relative; overflow: hidden; background: var(--ink); aspect-ratio: 4/5; width: 100%; max-width: 480px; justify-self: end; }
 .cover-right img { width: 100%; height: 100%; object-fit: cover; }
 
 .back-link {
@@ -299,9 +299,9 @@ const isEnCurso = project.status === 'en_curso';
 
 @media (max-width: 1100px) {
   .gallery-section { padding-left: 24px; padding-right: 24px; }
-  .cover { grid-template-columns: 1fr; min-height: 0; }
-  .cover-left { padding: 40px 24px; }
-  .cover-right { aspect-ratio: 16/10; }
+  .cover { grid-template-columns: 1fr; min-height: 0; padding: 76px 24px 40px; gap: 28px; }
+  .cover-left { padding: 0; }
+  .cover-right { aspect-ratio: 4/3; max-width: 100%; justify-self: stretch; order: 2; }
   .gallery { column-count: 2; }
 }
 @media (max-width: 700px) {
