@@ -6,9 +6,12 @@ const settings = await getSiteSettings();
 const projects = await getAllProjects();
 
 const statusLabel = (p: any) => p.status === 'en_curso' ? 'En Curso' : 'Terminado';
+
+const homeTitle = 'Schuckman & Asoc. — Arquitectura en Ituzaingó, Buenos Aires';
+const homeDescription = 'Estudio de arquitectura y diseño en Ituzaingó, zona oeste de Buenos Aires. Edificios residenciales en obra y entregados. Proyecto, dirección y construcción bajo el mismo techo.';
 ---
 
-<BaseLayout>
+<BaseLayout title={homeTitle} description={homeDescription} ogImage={settings.officeImage}>
   <!-- HERO -->
   <section class="hero">
     <div class="hero-bg" style={`background-image: url('${settings.officeImage}')`}></div>
