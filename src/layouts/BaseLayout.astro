@@ -10,16 +10,49 @@ interface Props {
   description?: string;
   activeNav?: 'estudio' | 'proyectos' | 'contacto' | '';
   showFooter?: boolean;
+  ogImage?: string;
+  jsonLd?: object;
 }
 
 const {
-  title = 'Schuckman & Asoc. — Arquitectura | Diseño',
-  description = 'Estudio de arquitectura y diseño. Acompañamos cada obra de principio a fin, con atención personalizada en cada etapa.',
+  title = 'Schuckman & Asoc. — Arquitectura y diseño en Ituzaingó, Buenos Aires',
+  description = 'Estudio de arquitectura y diseño en Ituzaingó. Proyecto, dirección y construcción de edificios residenciales en la zona oeste del Gran Buenos Aires.',
   activeNav = '',
   showFooter = true,
+  ogImage,
+  jsonLd,
 } = Astro.props;
 
 const settings = await getSiteSettings();
+
+const SITE_URL = 'https://www.schuckman.com.ar';
+const canonicalURL = new URL(Astro.url.pathname, SITE_URL).href;
+const finalOgImage = ogImage || settings?.officeImage || `${SITE_URL}/favicon.svg`;
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Schuckman & Asoc.",
+  "description": "Estudio de arquitectura y diseño en Ituzaingó, Buenos Aires. Proyecto, dirección de obra y construcción de edificios residenciales.",
+  "url": SITE_URL,
+  "telephone": "+541130244030",
+  "email": "r.schuckman@schuckman.com.ar",
+  "image": finalOgImage,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Lavalle 898, 1er piso",
+    "addressLocality": "Ituzaingó",
+    "addressRegion": "Buenos Aires",
+    "addressCountry": "AR"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Ituzaingó" },
+    { "@type": "AdministrativeArea", "name": "Zona Oeste, Gran Buenos Aires" }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/schuckman_asoc/"
+  ]
+};
 ---
 <!DOCTYPE html>
 <html lang="es">
@@ -28,13 +61,31 @@ const settings = await getSiteSettings();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
   <meta name="description" content={description}>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <link rel="canonical" href={canonicalURL}>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
   <meta property="og:title" content={title}>
   <meta property="og:description" content={description}>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Schuckman & Asoc.">
+  <meta property="og:url" content={canonicalURL}>
+  <meta property="og:locale" content="es_AR">
+  {finalOgImage && <meta property="og:image" content={finalOgImage}>}
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  {finalOgImage && <meta name="twitter:image" content={finalOgImage}>}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+  <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)}></script>
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>}
 </head>
 <body>
   <Header activeNav={activeNav} />
