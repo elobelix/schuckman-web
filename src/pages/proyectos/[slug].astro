@@ -51,10 +51,49 @@ const allAmenities = [
 ];
 
 const isEnCurso = project.status === 'en_curso';
+
+const statusText = isEnCurso ? `en construcción (${currentStageName})` : 'entregado';
+const locationText = [project.address, project.neighborhood].filter(Boolean).join(', ');
+const sizeText = project.superficie ? `${project.superficie.toLocaleString('es-AR')} m²` : '';
+const unitsText = project.unidades ? `${project.unidades} unidades` : '';
+
+const projectTitle = `${project.name} — ${project.neighborhood || 'Ituzaingó'} · Schuckman & Asoc.`;
+const projectDescription = [
+  `${project.name} es un edificio residencial ${statusText}`,
+  locationText ? `ubicado en ${locationText}` : null,
+  sizeText && unitsText ? `de ${sizeText} con ${unitsText}` : (sizeText || unitsText),
+  '. Proyecto y dirección de obra por Schuckman & Asoc.'
+].filter(Boolean).join(' ').replace(' .', '.');
+
+const projectSchema = {
+  "@context": "https://schema.org",
+  "@type": "ApartmentComplex",
+  "name": project.name,
+  "description": projectDescription,
+  "image": project.coverImage || project.gallery?.[0],
+  "url": `https://www.schuckman.com.ar/proyectos/${slug}`,
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": project.address || undefined,
+    "addressLocality": project.neighborhood || "Ituzaingó",
+    "addressRegion": "Buenos Aires",
+    "addressCountry": "AR"
+  },
+  ...(project.unidades && { "numberOfAccommodationUnits": project.unidades }),
+  ...(project.pisos && { "numberOfFloors": project.pisos }),
+  "provider": {
+    "@type": "ProfessionalService",
+    "name": "Schuckman & Asoc.",
+    "url": "https://www.schuckman.com.ar"
+  }
+};
 ---
 
 <BaseLayout
-  title={`${project.name} — Schuckman & Asoc.`}
+  title={projectTitle}
+  description={projectDescription}
+  ogImage={project.coverImage || project.gallery?.[0]}
+  jsonLd={projectSchema}
   activeNav="proyectos"
   showFooter={false}
 >
@@ -159,7 +198,7 @@ const isEnCurso = project.status === 'en_curso';
     </div>
 
     <div class="cover-right">
-      <img src={project.coverImage || project.gallery?.[0]} alt={project.name}>
+      <img src={project.coverImage || project.gallery?.[0]} alt={`${project.name} — ${locationText || 'Ituzaingó, Buenos Aires'} — Schuckman & Asoc.`} loading="eager">
     </div>
   </section>
 
@@ -169,7 +208,7 @@ const isEnCurso = project.status === 'en_curso';
       <div class="gallery-head"><h2>Galería</h2></div>
       <div class="gallery">
         {project.gallery.map((img: string, idx: number) => (
-          <div class="g-item"><img src={img} alt={`${project.name} — ${idx + 1}`}></div>
+          <div class="g-item"><img src={img} alt={`${project.name} — vista ${idx + 1} — ${project.neighborhood || 'Ituzaingó'}`} loading="lazy"></div>
         ))}
       </div>
     </section>
