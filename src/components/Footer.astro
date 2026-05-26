@@ -4,6 +4,13 @@ interface Props {
 }
 const { settings } = Astro.props;
 const c = settings.contact;
+
+// Ofuscación de email: separamos user y domain en data-attributes,
+// invertimos los strings y los reconstruimos en cliente con JS.
+// Los scrapers que solo leen HTML no ven nunca el email completo.
+const emailParts = c.email.split('@');
+const emailUser = emailParts[0].split('').reverse().join('');
+const emailDomain = (emailParts[1] || '').split('').reverse().join('');
 ---
 
 <section class="footer-preview" id="contacto">
@@ -14,7 +21,18 @@ const c = settings.contact;
     </div>
     <div class="footer-contact">
       <h4>Contacto</h4>
-      <p><a href={`mailto:${c.email}`}>{c.email}</a></p>
+      <p>
+        <a
+          href="#"
+          class="email-link"
+          data-u={emailUser}
+          data-d={emailDomain}
+          aria-label="Enviar email al estudio"
+        >
+          <noscript>Contacto por WhatsApp o Instagram</noscript>
+          <span class="email-placeholder">Escribinos</span>
+        </a>
+      </p>
       <p><a href={`tel:${c.phoneRaw}`}>{c.phone}</a></p>
       <p>{c.addressLine1}<br>{c.addressLine2}</p>
     </div>
@@ -28,3 +46,19 @@ const c = settings.contact;
     <span>schuckman.com.ar</span>
   </div>
 </section>
+
+<script>
+  // Hidratamos los emails ofuscados en cliente.
+  // Esto se ejecuta en el navegador, NO en el HTML del servidor.
+  document.querySelectorAll('a.email-link').forEach((link) => {
+    const u = link.getAttribute('data-u') || '';
+    const d = link.getAttribute('data-d') || '';
+    if (!u || !d) return;
+    const user = u.split('').reverse().join('');
+    const domain = d.split('').reverse().join('');
+    const email = user + '\u0040' + domain;
+    link.setAttribute('href', 'mai' + 'lto:' + email);
+    const span = link.querySelector('.email-placeholder');
+    if (span) span.textContent = email;
+  });
+</script>
