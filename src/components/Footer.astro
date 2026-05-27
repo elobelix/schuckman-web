@@ -118,11 +118,15 @@ const taburet = {
     margin: 0 0 24px;
     max-width: 320px;
   }
-  .taburet-logo {
-    display: table; /* table es el truco: se ajusta al contenido más ancho de manera real */
+  .footer-preview .taburet-logo {
+    display: inline-flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    width: fit-content;
+    max-width: max-content;
     margin: 0 0 20px;
   }
-  .taburet-word {
+  .footer-preview .taburet-word {
     font-family: 'Jost', sans-serif;
     font-weight: 300;
     font-size: 32px;
@@ -131,14 +135,16 @@ const taburet = {
     line-height: 1;
     text-align: center;
     white-space: nowrap;
+    padding: 0 4px;
   }
-  .taburet-divider {
+  .footer-preview .taburet-divider {
     height: 1px;
     background: var(--ink);
-    margin: 7px 0 7px;
-    width: 100%; /* ahora 100% del table = ancho del wordmark */
+    margin: 7px 0;
+    width: auto;
+    align-self: stretch;
   }
-  .taburet-sub {
+  .footer-preview .taburet-sub {
     font-family: 'Jost', sans-serif;
     font-weight: 300;
     font-size: 9px;
@@ -146,7 +152,7 @@ const taburet = {
     color: var(--ink);
     text-transform: uppercase;
     text-align: center;
-    padding-left: 0.55em; /* compensa el tracking del texto centrado */
+    padding-left: 0.55em;
     white-space: nowrap;
   }
   .footer-taburet .taburet-contact {
