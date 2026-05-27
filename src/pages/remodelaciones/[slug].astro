@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllRemodelaciones, getRemodelacionBySlug } from '../../sanity/queries';
+
+// Static site generation: pre-render one page per remodelación at build time
+export async function getStaticPaths() {
+  const remodelaciones = await getAllRemodelaciones();
+  return remodelaciones.map((r: any) => ({
+    params: { slug: r.slug },
+    props: { slug: r.slug }
+  }));
+}
+
+const { slug } = Astro.props;
+const remodelacion = await getRemodelacionBySlug(slug);
+
+if (!remodelacion) {
+  return Astro.redirect('/404');
+}
+
+// Map de etiquetas de tipo de intervención
+const TIPOS_LABELS: Record<string, string> = {
+  reciclaje_integral: 'Reciclaje integral',
+  ampliacion: 'Ampliación',
+  refaccion_parcial: 'Refacción parcial',
+  cambio_de_uso: 'Cambio de uso',
+  diseno_interiores: 'Diseño de interiores',
+};
+
+const tipoLabel = TIPOS_LABELS[remodelacion.tipo] || remodelacion.tipo;
+const locationText = [remodelacion.neighborhood, remodelacion.year].filter(Boolean).join(' · ');
+const sizeText = remodelacion.superficie ? `${remodelacion.superficie.toLocaleString('es-AR')} m²` : '';
+
+const pageTitle = `${remodelacion.name} — ${remodelacion.neighborhood || 'Buenos Aires'} · Schuckman & Asoc.`;
+const pageDescription = [
+  `${remodelacion.name} — ${tipoLabel.toLowerCase()}`,
+  remodelacion.neighborhood ? `en ${remodelacion.neighborhood}` : null,
+  remodelacion.descripcion ? remodelacion.descripcion.substring(0, 160) : '. Proyecto y dirección de obra por Schuckman & Asoc.',
+].filter(Boolean).join(' ');
+
+// Title con la última palabra en italic accent (idem proyectos)
+const nameParts = remodelacion.name.split(' ');
+const titleMain = nameParts.slice(0, -1).join(' ');
+const titleAccent = nameParts.slice(-1)[0];
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={remodelacion.coverImage || remodelacion.gallery?.[0]}
+  activeNav="remodelaciones"
+  showFooter={false}
+>
+  <!-- MAGAZINE COVER -->
+  <section class="cover">
+    <div class="cover-left">
+      <div>
+        <a href="/#remodelaciones" class="back-link">Volver</a>
+        <div class="kicker">Remodelación</div>
+        <h1 class="proj-title">{titleMain} <em>{titleAccent}</em></h1>
+        <div class="title-meta">
+          <div class="status-pill">
+            {tipoLabel}
+          </div>
+          <div class="proj-loc">
+            {locationText}
+          </div>
+        </div>
+
+        {/* FICHA TÉCNICA: solo superficie */}
+        {remodelacion.superficie && (
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-val">{remodelacion.superficie.toLocaleString('es-AR')}<small>m²</small></div>
+              <div class="stat-lbl">Superficie intervenida</div>
+            </div>
+          </div>
+        )}
+
+        {remodelacion.descripcion && (
+          <div class="descripcion">
+            <strong>Sobre la intervención</strong>
+            <p>{remodelacion.descripcion}</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div class="cover-right">
+      <img src={remodelacion.coverImage || remodelacion.gallery?.[0]} alt={`${remodelacion.name} — ${remodelacion.neighborhood || 'Buenos Aires'} — Schuckman & Asoc.`} loading="eager">
+    </div>
+  </section>
+
+  {/* GALERÍA */}
+  {remodelacion.gallery && remodelacion.gallery.length > 0 && (
+    <section class="gallery-section">
+      <div class="gallery-head"><h2>Galería</h2></div>
+      <div class="gallery">
+        {remodelacion.gallery.map((img: string, idx: number) => (
+          <div class="g-item"><img src={img} alt={`${remodelacion.name} — vista ${idx + 1} — ${remodelacion.neighborhood || ''}`} loading="lazy"></div>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+.cover { display: grid; grid-template-columns: 1.4fr 1fr; min-height: 75vh; padding: 76px 48px 48px; gap: 48px; align-items: start; }
+.cover-left { padding: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 28px; }
+.cover-right { position: relative; overflow: hidden; background: var(--ink); aspect-ratio: 4/5; width: 100%; max-width: 480px; justify-self: end; }
+.cover-right img { width: 100%; height: 100%; object-fit: cover; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 300; font-size: 11px; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 32px; transition: color 0.3s ease;
+}
+.back-link:hover { color: var(--accent); }
+.back-link::before { content: '←'; font-family: 'Instrument Serif', serif; font-style: italic; font-size: 18px; }
+
+.kicker {
+  font-weight: 300; font-size: 11px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.kicker::before { content: ''; width: 40px; height: 1px; background: var(--accent); }
+
+.proj-title {
+  font-family: 'Instrument Serif', serif; font-weight: 400;
+  font-size: clamp(48px, 6.5vw, 96px); line-height: 0.9;
+  letter-spacing: -0.025em; margin-bottom: 18px;
+}
+.proj-title em { font-style: italic; color: var(--accent); }
+
+.title-meta { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 28px; }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px;
+  border: 1px solid var(--accent); background: rgba(216,123,77,0.07);
+  font-weight: 400; font-size: 10px; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--accent);
+}
+.proj-loc {
+  font-weight: 300; font-size: 12px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+
+.stat-row {
+  display: grid; grid-template-columns: 1fr; gap: 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 14px 0; margin-bottom: 18px;
+}
+.stat { display: flex; flex-direction: column; gap: 4px; padding: 0; }
+.stat-val { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 32px; line-height: 1; color: var(--ink); }
+.stat-val small { font-family: 'Jost', sans-serif; font-style: normal; font-weight: 300; font-size: 11px; margin-left: 3px; color: var(--muted); }
+.stat-lbl { font-weight: 300; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); }
+
+.descripcion {
+  font-weight: 300; font-size: 15px; line-height: 1.7; color: var(--ink-soft);
+  margin-bottom: 20px; padding: 18px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  max-width: 560px;
+}
+.descripcion strong {
+  display: block; font-weight: 300; font-size: 10px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+}
+.descripcion p { margin: 0; white-space: pre-wrap; }
+
+/* Gallery */
+.gallery-section { max-width: var(--container); margin: 0 auto; padding: 100px 48px 120px; }
+.gallery-head { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 60px; }
+.gallery-head h2 { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(40px, 6vw, 72px); line-height: 0.95; letter-spacing: -0.02em; }
+.gallery { column-count: 3; column-gap: 6px; }
+.g-item { overflow: hidden; background: var(--ink); position: relative; cursor: pointer; break-inside: avoid; margin-bottom: 6px; }
+.g-item img { width: 100%; height: auto; display: block; transition: transform 1.2s cubic-bezier(0.16,1,0.3,1), filter 0.5s ease; filter: brightness(1); }
+.g-item:hover img { transform: scale(1.06); filter: brightness(0.75); }
+
+@media (max-width: 1100px) {
+  .gallery-section { padding-left: 24px; padding-right: 24px; }
+  .cover { grid-template-columns: 1fr; min-height: 0; padding: 76px 24px 40px; gap: 28px; }
+  .cover-left { padding: 0; }
+  .cover-right { aspect-ratio: 4/3; max-width: 100%; justify-self: stretch; order: 2; }
+  .gallery { column-count: 2; }
+}
+@media (max-width: 700px) {
+  .gallery { column-count: 1; }
+  .title-meta { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .stat-val { font-size: 26px; }
+}
+</style>
