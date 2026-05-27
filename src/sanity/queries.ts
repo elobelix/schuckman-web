@@ -42,3 +42,29 @@ export async function getProjectBySlug(slug: string) {
   const data = await sanityClient!.fetch(query, { slug });
   return data;
 }
+
+export async function getAllRemodelaciones() {
+  if (!isSanityConfigured) return fallbackData.remodelaciones || [];
+  const query = `*[_type == "remodelacion"] | order(orderRank asc){
+    _id, name, "slug": slug.current, tipo,
+    neighborhood, year, orderRank,
+    "coverImage": coverImage.asset->url
+  }`;
+  const data = await sanityClient!.fetch(query);
+  return data || fallbackData.remodelaciones || [];
+}
+
+export async function getRemodelacionBySlug(slug: string) {
+  if (!isSanityConfigured) {
+    return (fallbackData.remodelaciones || []).find((r: any) => r.slug === slug);
+  }
+  const query = `*[_type == "remodelacion" && slug.current == $slug][0]{
+    _id, name, "slug": slug.current, tipo,
+    neighborhood, year,
+    superficie, descripcion,
+    "coverImage": coverImage.asset->url,
+    "gallery": gallery[].asset->url
+  }`;
+  const data = await sanityClient!.fetch(query, { slug });
+  return data;
+}
