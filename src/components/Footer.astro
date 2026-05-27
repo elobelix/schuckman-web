@@ -11,13 +11,32 @@ const c = settings.contact;
 const emailParts = c.email.split('@');
 const emailUser = emailParts[0].split('').reverse().join('');
 const emailDomain = (emailParts[1] || '').split('').reverse().join('');
+
+// Datos Taburet (partner comercial para venta de pozo)
+const taburet = {
+  whatsappUrl: 'https://api.whatsapp.com/send?phone=5491123380045&text=Quisiera%20contactarme%20con%20ustedes',
+  whatsappLabel: '+54 9 11 2338-0045',
+};
 ---
 
 <section class="footer-preview" id="contacto">
   <div class="footer-grid">
-    <div>
-      <h4>Estudio</h4>
-      <p class="footer-statement">Arquitectura <em>pensada, dirigida y construida</em> en persona.</p>
+    <div class="footer-taburet">
+      <h4>Comercialización</h4>
+      <p class="taburet-intro">Para comercialización de unidades en pozo, contactar a:</p>
+      <div class="taburet-logo">
+        <div class="taburet-word">Taburet</div>
+        <div class="taburet-divider"></div>
+        <div class="taburet-sub">Propiedades</div>
+      </div>
+      <p class="taburet-contact">
+        <a href={taburet.whatsappUrl} target="_blank" rel="noopener" aria-label="WhatsApp Taburet Propiedades">
+          <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+          </svg>
+          <span>{taburet.whatsappLabel}</span>
+        </a>
+      </p>
     </div>
     <div class="footer-contact">
       <h4>Contacto</h4>
@@ -33,12 +52,28 @@ const emailDomain = (emailParts[1] || '').split('').reverse().join('');
           <span class="email-placeholder">Escribinos</span>
         </a>
       </p>
-      <p><a href={`tel:${c.phoneRaw}`}>{c.phone}</a></p>
+      <p>
+        <a href={`tel:${c.phoneRaw}`}>
+          <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+          </svg>
+          <span>{c.phone}</span>
+        </a>
+      </p>
       <p>{c.addressLine1}<br>{c.addressLine2}</p>
     </div>
-    <div class="footer-contact">
+    <div class="footer-contact footer-social">
       <h4>Síguenos</h4>
-      <p><a href={settings.instagramUrl} target="_blank" rel="noopener">Instagram →</a></p>
+      <p>
+        <a href={settings.instagramUrl} target="_blank" rel="noopener" aria-label="Instagram Schuckman & Asoc.">
+          <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+          <span>Instagram</span>
+        </a>
+      </p>
     </div>
   </div>
   <div class="footer-bottom">
@@ -62,3 +97,109 @@ const emailDomain = (emailParts[1] || '').split('').reverse().join('');
     if (span) span.textContent = email;
   });
 </script>
+
+<style is:global>
+  /* Override del grid del footer: simetria 1:1:1 para acomodar Taburet */
+  .footer-preview .footer-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* === COLUMNA TABURET === */
+  .footer-taburet {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .footer-taburet .taburet-intro {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+    max-width: 320px;
+  }
+  .taburet-logo {
+    display: inline-block;
+    margin: 0 0 20px;
+  }
+  .taburet-word {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    letter-spacing: 0.005em;
+    color: var(--ink);
+    line-height: 1;
+    text-align: center;
+  }
+  .taburet-divider {
+    height: 1px;
+    background: var(--ink);
+    margin: 7px 0 7px;
+  }
+  .taburet-sub {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    letter-spacing: 0.55em;
+    color: var(--ink);
+    text-transform: uppercase;
+    text-align: center;
+    padding-left: 0.55em; /* compensa el tracking del texto centrado */
+  }
+  .footer-taburet .taburet-contact {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink-soft);
+  }
+  .footer-taburet .taburet-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease;
+  }
+  .footer-taburet .taburet-contact a:hover { color: var(--accent); }
+
+  /* === ICONOS WHATSAPP + INSTAGRAM EN FOOTER === */
+  .footer-contact .wa-icon,
+  .footer-taburet .wa-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .footer-contact p a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .footer-social .ig-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .footer-social a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 1100px) {
+    .footer-preview .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+    .footer-taburet { grid-column: 1 / -1; }
+  }
+  @media (max-width: 700px) {
+    .footer-preview .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .footer-taburet { grid-column: auto; }
+    .taburet-word { font-size: 28px; }
+  }
+</style>
