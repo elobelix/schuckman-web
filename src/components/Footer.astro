@@ -119,7 +119,7 @@ const taburet = {
     max-width: 320px;
   }
   .taburet-logo {
-    display: inline-block;
+    display: table; /* table es el truco: se ajusta al contenido más ancho de manera real */
     margin: 0 0 20px;
   }
   .taburet-word {
@@ -130,11 +130,13 @@ const taburet = {
     color: var(--ink);
     line-height: 1;
     text-align: center;
+    white-space: nowrap;
   }
   .taburet-divider {
     height: 1px;
     background: var(--ink);
     margin: 7px 0 7px;
+    width: 100%; /* ahora 100% del table = ancho del wordmark */
   }
   .taburet-sub {
     font-family: 'Jost', sans-serif;
@@ -145,6 +147,7 @@ const taburet = {
     text-transform: uppercase;
     text-align: center;
     padding-left: 0.55em; /* compensa el tracking del texto centrado */
+    white-space: nowrap;
   }
   .footer-taburet .taburet-contact {
     margin: 0;
