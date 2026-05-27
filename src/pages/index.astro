@@ -1,11 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSiteSettings, getAllProjects } from '../sanity/queries';
+import { getSiteSettings, getAllProjects, getAllRemodelaciones } from '../sanity/queries';
 
 const settings = await getSiteSettings();
 const projects = await getAllProjects();
+const remodelaciones = await getAllRemodelaciones();
 
 const statusLabel = (p: any) => p.status === 'en_curso' ? 'En Curso' : 'Terminado';
+
+// Map de etiquetas de tipo de intervención
+const TIPOS_LABELS: Record<string, string> = {
+  reciclaje_integral: 'Reciclaje integral',
+  ampliacion: 'Ampliación',
+  refaccion_parcial: 'Refacción parcial',
+  cambio_de_uso: 'Cambio de uso',
+  diseno_interiores: 'Diseño de interiores',
+};
+const tipoLabel = (r: any) => TIPOS_LABELS[r.tipo] || r.tipo;
 
 const homeTitle = 'Schuckman & Asoc. — Arquitectura en Ituzaingó, Buenos Aires';
 const homeDescription = 'Estudio de arquitectura y diseño en Ituzaingó, zona oeste de Buenos Aires. Edificios residenciales en obra y entregados. Proyecto, dirección y construcción bajo el mismo techo.';
@@ -91,6 +102,31 @@ const homeDescription = 'Estudio de arquitectura y diseño en Ituzaingó, zona o
       </div>
     </div>
   </section>
+
+  <!-- REMODELACIONES -->
+  {remodelaciones && remodelaciones.length > 0 && (
+    <section class="section remodelaciones-section" id="remodelaciones">
+      <div class="container">
+        <div class="section-head" data-num="03">
+          <div class="label">Remodelaciones</div>
+        </div>
+
+        <div class="grid">
+          {remodelaciones.map((r: any) => (
+            <a href={`/remodelaciones/${r.slug}`} class="card">
+              <div class="card-img" style={`background-image: url('${r.coverImage}')`}></div>
+              <div class="card-overlay"></div>
+              <div class="card-info">
+                <div class="card-name">{r.name}</div>
+                <div class="card-meta"><span>{tipoLabel(r)}</span></div>
+              </div>
+              <div class="card-arrow">→</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
@@ -260,6 +296,8 @@ const homeDescription = 'Estudio de arquitectura y diseño en Ituzaingó, zona o
 
 /* === PROYECTOS === */
 .projects-section { background: var(--bg-warm); }
+/* === REMODELACIONES === */
+.remodelaciones-section { background: var(--bg); }
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
