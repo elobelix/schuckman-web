@@ -17,9 +17,9 @@ export async function getSiteSettings() {
 
 export async function getAllProjects() {
   if (!isSanityConfigured) return fallbackData.projects;
-  const query = `*[_type == "proyecto"] | order(year desc, _createdAt desc){
+  const query = `*[_type == "proyecto"] | order(orderRank asc){
     _id, name, "slug": slug.current, status, currentStage,
-    address, neighborhood, year,
+    address, neighborhood, year, orderRank,
     "coverImage": coverImage.asset->url
   }`;
   const data = await sanityClient!.fetch(query);
