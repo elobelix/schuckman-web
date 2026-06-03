@@ -25,7 +25,7 @@ const {
 
 const settings = await getSiteSettings();
 
-const SITE_URL = 'https://www.schuckman.com.ar';
+const SITE_URL = 'https://schuckman.com.ar';
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL).href;
 const finalOgImage = ogImage || settings?.officeImage || `${SITE_URL}/favicon.svg`;
 
